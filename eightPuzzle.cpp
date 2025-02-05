@@ -52,7 +52,7 @@ int misplacedTile(vector<vector<int>> puzzle) {
     int misplaced = 0;
     for(int i = 0; i < 3; ++i) {
         for(int j = 0; j < 3; j++) {
-            if(puzzle[i][j] != goalState[i][j]) {
+            if(puzzle[i][j] != goalState[i][j] && puzzle[i][j] != 0) {
                 misplaced++;
             }
         }
