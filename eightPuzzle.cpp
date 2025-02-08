@@ -1,10 +1,18 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <utility>
 
 using namespace std;
 
 vector<vector<int>> goalState = {{1, 2, 3}, {4, 5, 6}, {7, 8, 0}};
+
+struct Puzzle {
+    vector<vector<int>> board;
+    pair<int,int> emptyIndex;
+    int cost;
+    const Puzzle* parent;
+};
 
 int main() {
     cout << "Welcome to my 8-Puzzle Solver. Type \'1\' to use a default puzzle, or \'2\' to create your own." << endl;
@@ -77,4 +85,69 @@ int manhattanDistance(vector<vector<int>> puzzle) {
     }
 
     return distance;
+}
+
+// generate children
+vector<Puzzle> expand(const Puzzle* p) {
+    vector<Puzzle> children;
+
+    int r = -1, c = -1;  // row and column of empty space
+    for(int i = 0; i < 3; ++i) {
+        for(int j = 0; j < 3; ++j) {
+            if(p->board[i][j] == 0) {
+                r = i;
+                c = j;
+                break;
+            }
+        }
+        if(r != -1) {   // break out of outer loop when empty space is found
+            break;
+        }
+    }
+
+    // move empty spce to the left
+    if(c > 0) {
+        Puzzle* child = new Puzzle;
+        child->board = p->board;
+        swap(child->board[r][c], child->board[r][c-1]);
+        child->emptyIndex = {r, c -1};
+        child->cost = p->cost + 1;
+        child->parent = p;
+        children.push_back(*child);
+    }
+
+    // move empty space to the right
+    if(c < 2) {
+        Puzzle* child = new Puzzle;
+        child->board = p->board;
+        swap(child->board[r][c], child->board[r][c+1]);
+        child->emptyIndex = {r, c + 1};
+        child->cost = p->cost + 1;
+        child->parent = p;
+        children.push_back(*child);
+    }
+
+    // move empty space up
+    if(r > 0) {
+        Puzzle* child = new Puzzle;
+        child->board = p->board;
+        swap(child->board[r][c], child->board[r-1][c]);
+        child->emptyIndex = {r - 1, c};
+        child->cost = p->cost + 1;
+        child->parent = p;
+        children.push_back(*child);
+    }
+
+    // move empty space down
+    if(r < 2) {
+        Puzzle* child = new Puzzle;
+        child->board = p->board;
+        swap(child->board[r][c], child->board[r+1][c]);
+        child->emptyIndex = {r + 1, c};
+        child->cost = p->cost + 1;
+        child->parent = p;
+        children.push_back(*child);
+    }
+
+    return children;
 }
