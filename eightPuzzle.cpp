@@ -51,9 +51,39 @@ int main() {
     }
 
     vector<vector<int>> puzzle(3, vector<int>(3));
+
     if(choice == 1) {
-        generalSearch(depth24, 3);
-        return 0;
+        cout << "Select a default puzzle. (1) for depth 0, (2) for depth 2, (3) for depth 4, (4) for depth 8, (5) for depth 12, (6) for depth 16, (7) for depth 20, or (8) for depth 24." << endl;
+        int defaultChoice;
+        cin >> defaultChoice;
+        if(defaultChoice == 1) {
+            puzzle = depth0;
+        }
+        else if(defaultChoice == 2) {
+            puzzle = depth2;
+        }
+        else if(defaultChoice == 3) {
+            puzzle = depth4;
+        }
+        else if(defaultChoice == 4) {
+            puzzle = depth8;
+        }
+        else if(defaultChoice == 5) {
+            puzzle = depth12;
+        }
+        else if(defaultChoice == 6) {
+            puzzle = depth16;
+        }
+        else if(defaultChoice == 7) {
+            puzzle = depth20;
+        }
+        else if(defaultChoice == 8) {
+            puzzle = depth24;
+        }
+        else {
+            cout << "Invalid choice. Exiting program." << endl;
+            return 1;
+        }
     }
 
     if(choice == 2) {
@@ -100,6 +130,7 @@ int main() {
 // general search algorithm
 void generalSearch(vector<vector<int>> puzzleBoard, int alg) {
     int heuristic = -1;
+    // calculate heuristic based on user input
     if(alg == 1) {
         heuristic = 0;
     }
@@ -110,7 +141,7 @@ void generalSearch(vector<vector<int>> puzzleBoard, int alg) {
         heuristic = manhattanDistance(puzzleBoard);
     }
 
-    priority_queue<Puzzle, vector<Puzzle>, ComparePuzzle> nodes;
+    priority_queue<Puzzle, vector<Puzzle>, ComparePuzzle> nodes; // priority queue to store nodes
     Puzzle *newPuzzle = new Puzzle;
     newPuzzle->board = puzzleBoard;
     newPuzzle->emptyIndex = findEmptySpace(puzzleBoard);
@@ -120,20 +151,20 @@ void generalSearch(vector<vector<int>> puzzleBoard, int alg) {
 
     int nodesVisited = 0;
     int maxQueueSize = -1;
-    vector<Puzzle> visited;
+    vector<Puzzle> visited;     // vector to store puzzles that have been visited to prevent duplicate expansions
 
     visited.push_back(*newPuzzle);
 
     while(true) {
-        if(nodes.empty()) {
+        if(nodes.empty()) {   // if queue is empty, failure
             cout << "Failure" << endl;
             return;
         }
 
-        Puzzle current = nodes.top();
+        Puzzle current = nodes.top(); 
         nodes.pop();
 
-        if(current.board == goalState) {
+        if(current.board == goalState) {   // if goal state is reached, print solution
             cout << "Goal state!" << endl << endl;
             cout << "Solution depth was " << current.depth << endl;
             cout << "Number of nodes expanded: " << nodesVisited << endl;
@@ -148,6 +179,7 @@ void generalSearch(vector<vector<int>> puzzleBoard, int alg) {
 
         vector<Puzzle> children = expand(&current, visited);
         
+        // update heuristics for children puzzle
         for(int i = 0; i < children.size(); ++i) {
             if(alg == 1) {
                 children[i].heuristicCost = 0;
@@ -220,8 +252,8 @@ pair<int,int> findEmptySpace(vector<vector<int>> puzzle) {
 vector<Puzzle> expand(const Puzzle* p, vector<Puzzle> visited) {
     vector<Puzzle> children;
 
-    int r = p->emptyIndex.first;
-    int c = p->emptyIndex.second;
+    int r = p->emptyIndex.first;    // row of empty space
+    int c = p->emptyIndex.second;   // column of empty space
 
     // move empty spce to the left
     if(c > 0) {
@@ -267,6 +299,7 @@ vector<Puzzle> expand(const Puzzle* p, vector<Puzzle> visited) {
         children.push_back(*child);
     }
 
+    // remove children that have already been visited
     for(int i = 0; i < children.size(); ++i) {
         for(int j = 0; j < visited.size(); ++j) {
             if(children[i].board == visited[j].board) {
