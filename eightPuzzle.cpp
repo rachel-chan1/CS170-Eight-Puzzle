@@ -3,6 +3,7 @@
 #include <queue>
 #include <utility>
 #include <algorithm>
+#include <chrono>
 
 using namespace std;
 
@@ -150,10 +151,12 @@ void generalSearch(vector<vector<int>> puzzleBoard, int alg) {
     nodes.push(*newPuzzle);
 
     int nodesVisited = 0;
-    int maxQueueSize = -1;
+    int maxQueueSize = 0;
     vector<Puzzle> visited;     // vector to store puzzles that have been visited to prevent duplicate expansions
 
     visited.push_back(*newPuzzle);
+
+    auto start_time = std::chrono::high_resolution_clock::now();    // start clock
 
     while(true) {
         if(nodes.empty()) {   // if queue is empty, failure
@@ -169,6 +172,9 @@ void generalSearch(vector<vector<int>> puzzleBoard, int alg) {
             cout << "Solution depth was " << current.depth << endl;
             cout << "Number of nodes expanded: " << nodesVisited << endl;
             cout << "Max queue size: " << maxQueueSize << endl;
+            auto end_time = std::chrono::high_resolution_clock::now();  // end clock
+            std::chrono::duration<double> elapsed = end_time - start_time;  // calculate time taken
+            cout << "Time taken: " << elapsed.count() << " seconds" << endl;
             return;
         }
 
